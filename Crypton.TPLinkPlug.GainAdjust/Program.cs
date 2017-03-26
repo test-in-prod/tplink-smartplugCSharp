@@ -9,6 +9,9 @@ namespace Crypton.TPLinkPlug.GainAdjust
 {
     class Program
     {
+
+        static bool isAdjusting = false;
+
         static void Main(string[] args)
         {
 
@@ -17,41 +20,57 @@ namespace Crypton.TPLinkPlug.GainAdjust
 
             Console.CancelKeyPress += (e, a) => { Environment.Exit(0); };
 
+            emeter.Updated += Emeter_Updated;
             emeter.Start();
 
             while (true)
             {
-                Console.Clear();
-
-                Console.WriteLine($"{emeter.Voltage}V  {emeter.Current}A  {emeter.Power}W  {emeter.Total}kWh");
-                Console.WriteLine($"VGain: {emeter.VGain}  IGain: {emeter.IGain}");
-                Console.WriteLine("Q - increase VGain, A - decrease VGain");
-                Console.WriteLine("W - increase IGain, S - decrease IGain");
-
                 if (Console.KeyAvailable && emeter.VGain > 0 && emeter.IGain > 0)
                 {
-                    var key = Console.ReadKey();
+                    var key = Console.ReadKey(true);
                     switch (key.Key)
                     {
                         case ConsoleKey.Q:
                             emeter.SetGain(emeter.VGain + 100, emeter.IGain);
+                            isAdjusting = true;
                             break;
                         case ConsoleKey.A:
                             emeter.SetGain(emeter.VGain - 100, emeter.IGain);
+                            isAdjusting = true;
                             break;
                         case ConsoleKey.W:
                             emeter.SetGain(emeter.VGain, emeter.IGain + 100);
+                            isAdjusting = true;
                             break;
                         case ConsoleKey.S:
                             emeter.SetGain(emeter.VGain, emeter.IGain - 100);
+                            isAdjusting = true;
                             break;
                     }
                 }
 
-                Thread.Sleep(1000);
-
+                Thread.Sleep(100);
             }
 
+        }
+
+        private static void Emeter_Updated(EMeter emeter)
+        {
+            Console.CursorLeft = 0;
+            Console.CursorTop = 0;
+            Console.WriteLine($"{emeter.Voltage}V  {emeter.Current}A  {emeter.Power}W  {emeter.TotalPower}kWh".PadRight(Console.BufferWidth - 1));
+            Console.WriteLine($"VGain: {emeter.VGain}  IGain: {emeter.IGain}".PadRight(Console.BufferWidth - 1));
+            Console.WriteLine("Q - increase VGain, A - decrease VGain");
+            Console.WriteLine("W - increase IGain, S - decrease IGain");
+            if (isAdjusting)
+            {
+                Console.WriteLine("Adjusting...");
+                isAdjusting = false;
+            }
+            else
+            {
+                Console.WriteLine($"".PadRight(Console.BufferWidth - 1));
+            }
         }
     }
 }
