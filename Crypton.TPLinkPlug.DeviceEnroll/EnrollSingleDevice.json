@@ -1,0 +1,17 @@
+﻿/*
+    This is a single-device example
+
+    1. Place smart plug into configuration mode (it broadcasts its own SSID)
+    2. Connect your laptop/PC to the config SSID
+    3. Run DeviceEnroll exe and supply it this config to enroll this specific device
+*/
+
+{
+  "defaults": {
+    "ip": "192.168.0.1", // this is the default
+    "ssid": "YOUR WLAN SSID",
+    "password": "YOUR WLAN PASSWORD",
+    "encryptionType": "WPA", // Open|WEP|WPA|WPA2
+    "alias": "Refrigerator" // Free-form text to identify device
+  }
+}

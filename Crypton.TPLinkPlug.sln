@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Crypton.TPLinkPlug", "Crypt
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Crypton.TPLinkPlug.GainAdjust", "Crypton.TPLinkPlug.GainAdjust\Crypton.TPLinkPlug.GainAdjust.csproj", "{DC8CAC4C-C874-44B3-BABD-3D92EF43ED74}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Crypton.TPLinkPlug.DeviceEnroll", "Crypton.TPLinkPlug.DeviceEnroll\Crypton.TPLinkPlug.DeviceEnroll.csproj", "{36B0EDC5-612F-4F62-BE90-C484F36CB0BA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{DC8CAC4C-C874-44B3-BABD-3D92EF43ED74}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DC8CAC4C-C874-44B3-BABD-3D92EF43ED74}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DC8CAC4C-C874-44B3-BABD-3D92EF43ED74}.Release|Any CPU.Build.0 = Release|Any CPU
+		{36B0EDC5-612F-4F62-BE90-C484F36CB0BA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{36B0EDC5-612F-4F62-BE90-C484F36CB0BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{36B0EDC5-612F-4F62-BE90-C484F36CB0BA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{36B0EDC5-612F-4F62-BE90-C484F36CB0BA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

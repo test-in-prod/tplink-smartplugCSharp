@@ -1,0 +1,34 @@
+﻿/*
+    This is a multi-device example
+
+    1. Place smart plug into configuration mode (it broadcasts its own SSID)
+    2. Connect your laptop/PC to the config SSID
+    3. Run DeviceEnroll exe and supply it this config to enroll this specific device
+    4. The program will apply only settings pertaining to that plug's MAC address
+      4.2. You may override settings on per-device level (e.g. place in different SSID/AP)
+*/
+
+{
+  "defaults": {
+    "ip": "192.168.0.1", // this is the default
+    "ssid": "YOUR WLAN SSID",
+    "password": "YOUR WLAN PASSWORD",
+    "encryptionType": "WPA", // Open|WEP|WPA|WPA2
+    "alias": "Refrigerator" // Free-form text to identify device
+  },
+  "devices": [
+    /* In another SSID */
+    {
+      "mac":  "01-23-45-67-89-ab",
+      "ssid": "YOUR OTHER WLAN SSID",
+      "password": "YOUR WLAN PASSWORD",
+      "encryptionType": "WPA", // Open|WEP|WPA|WPA2
+      "alias": "Friend's soldering iron" // Free-form text to identify device
+    },
+    // another device
+    {
+      "mac":  "01-23-45-67-89-dc",
+      "alias": "Kettle"
+    }
+  ]
+}
