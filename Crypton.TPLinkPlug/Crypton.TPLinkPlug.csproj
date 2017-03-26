@@ -51,7 +51,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="EMeter.cs" />
     <Compile Include="GetSystemInfo.cs" />
+    <Compile Include="GetTimeInfo.cs" />
+    <Compile Include="AdjustTimeZone.cs" />
+    <Compile Include="GetWLanScanInfo.cs" />
     <Compile Include="IPlugCommand.cs" />
     <Compile Include="IPlugResponse.cs" />
     <Compile Include="NullResponse.cs" />
@@ -61,6 +65,8 @@
     <Compile Include="SetAlias.cs" />
     <Compile Include="SetNightMode.cs" />
     <Compile Include="SetRelayState.cs" />
+    <Compile Include="SetStationInfo.cs" />
+    <Compile Include="WLanKeyType.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

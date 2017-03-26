@@ -17,6 +17,12 @@ namespace Crypton.TPLinkPlug
             var port = 9999;
 
             var client = new PlugInterface(ip, port);
+
+            //var result = client.Send<GetTimeInfo>(new GetTimeInfo());
+
+            var emeter = new EMeter(client);
+            emeter.Debug();
+
             //client.Send(new SetRelayState() { State = true });
             //client.Close();
             //client.Open();
