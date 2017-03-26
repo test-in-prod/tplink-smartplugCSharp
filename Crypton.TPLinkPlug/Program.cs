@@ -16,33 +16,12 @@ namespace Crypton.TPLinkPlug
             var ip = "192.168.40.13";
             var port = 9999;
 
-            TcpClient sock_tcp = new TcpClient(ip, port);
-            sock_tcp.ReceiveBufferSize = 1024 * 16;
-
-           // var cmd = "{\"netif\":{\"set_stainfo\":{\"ssid\":\"InternetOfShit\",\"password\":\"_qZ4XHxoFYlg60S\",\"key_type\":3}}}";
-            var crypted = encrypt(Encoding.UTF8.GetBytes(cmd));
-            byte[] recvBuffer = new byte[2048];
-
-            var ns = sock_tcp.GetStream();
-            ns.Write(crypted, 0, crypted.Length);
-            Thread.Sleep(1000);
-
-            var read = ns.Read(recvBuffer, 0, recvBuffer.Length);
-
-            // actual bytes received
-            byte[] actual = new byte[read - 4];
-
-            // skip 4-byte header and a 1-byte tail at the end
-            Array.Copy(recvBuffer, 4, actual, 0, read - 4);
-            sock_tcp.Close();
-
-            var decrypted = decrypt(actual);
-            var response = Encoding.UTF8.GetString(decrypted);
-            Console.WriteLine($"Sent: {cmd}");
-
-            Console.WriteLine($"Recv: {response}");
-
-
+            var client = new PlugInterface(ip, port);
+            //client.Send(new SetRelayState() { State = true });
+            //client.Close();
+            //client.Open();
+            //var result = client.Send<GetSystemInfo>(new GetSystemInfo());
+            //client.Send(new SetNightMode() { IsOff = false });
         }
 
         static byte[] encrypt(byte[] value)
