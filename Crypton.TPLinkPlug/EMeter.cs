@@ -9,12 +9,16 @@ using System.Threading.Tasks;
 namespace Crypton.TPLinkPlug
 {
     /// <summary>
-    /// Performs commands for energy metering
+    /// Provides a class for automatic energy monitoring
     /// </summary>
-    public class EMeter
+    public class EMeter : IDisposable
     {
+        internal static readonly object @null = null;
 
         private readonly PlugInterface plugInterface;
+        private TimeSpan reportInterval;
+        private Timer fetchReportTimer;
+        private readonly object lockHandle = new object();
 
         #region Internal command classes
         private class GetRealtime : IPlugCommand, IPlugResponse
@@ -142,131 +146,198 @@ namespace Crypton.TPLinkPlug
             }
         }
 
-        private class StartCalibration : IPlugCommand, IPlugResponse
+        private class ClearStats : IPlugCommand
         {
-
-            public int VTarget
-            {
-                get;
-                set;
-            }
-
-            public int ITarget
-            {
-                get;
-                set;
-            }
-
             public string GetJson()
             {
+
                 return JsonConvert.SerializeObject(new
                 {
                     emeter = new
                     {
-                        start_calibration = new
-                        {
-                            vtarget = VTarget,
-                            itarget = ITarget
-                        }
+                        erase_emeter_stat = @null
                     }
                 });
             }
-
-            public void Parse(string json)
-            {
-
-            }
         }
+
         #endregion
 
+        /// <summary>
+        /// Gets the current line voltage
+        /// </summary>
         public float Voltage
         {
             get;
             private set;
         }
 
+        /// <summary>
+        /// Gets the energy current in amperes
+        /// </summary>
         public float Current
         {
             get;
             private set;
         }
 
+        /// <summary>
+        /// Gets the current energy consumption in watts
+        /// </summary>
         public float Power
         {
             get;
             private set;
         }
 
-        public float Total
+        /// <summary>
+        /// Gets the total counted power in kilowatt-hours
+        /// </summary>
+        public float TotalPower
         {
             get;
             private set;
         }
 
+        /// <summary>
+        /// Gets the voltage gain
+        /// </summary>
         public int VGain
         {
             get;
             private set;
         }
 
+        /// <summary>
+        /// Gets the current gain
+        /// </summary>
         public int IGain
         {
             get;
             private set;
         }
 
+        /// <summary>
+        /// Gets or sets reporting interval
+        /// </summary>
+        public TimeSpan RefreshInterval
+        {
+            get { return reportInterval; }
+            set
+            {
+                if (fetchReportTimer != null)
+                    throw new InvalidOperationException("RefreshInterval cannot be adjusted while the timer is running; Stop the timer, adjust, and Start it again");
+                if (reportInterval.TotalMilliseconds >= 100)
+                {
+                    reportInterval = value;
+                }
+                else
+                {
+                    throw new ArgumentOutOfRangeException("ReportInterval must be at least 100 milliseconds");
+                }
+            }
+        }
+
+        /// <summary>
+        /// Fires when EMeter counts have been updated
+        /// </summary>
+        public event Action<EMeter> Updated;
+
+        /// <summary>
+        /// Fires when there is an exception while running the EMeter
+        /// </summary>
+        public event Action<EMeter, Exception> Exception;
+
         public EMeter(PlugInterface plugInterface)
         {
             this.plugInterface = plugInterface;
+            this.reportInterval = TimeSpan.FromSeconds(1);
         }
 
-        public async Task Start()
+        /// <summary>
+        /// Starts E-meter interval timer which will gather statistics at specified RefreshInterval
+        /// </summary>
+        public void Start()
         {
-            await Task.Run(() =>
+            if (fetchReportTimer == null)
             {
-                while (true)
+                fetchReportTimer = new Timer(fetchReportOnInterval, null, 0, (int)reportInterval.TotalMilliseconds);
+            }
+        }
+
+        /// <summary>
+        /// Stops the E-meter interval timer
+        /// </summary>
+        public void Stop()
+        {
+            if (fetchReportTimer != null)
+            {
+                fetchReportTimer.Dispose();
+                fetchReportTimer = null;
+            }
+        }
+
+        private void fetchReportOnInterval(object state)
+        {
+            lock (lockHandle)
+            {
+                try
                 {
                     var gain = plugInterface.Send<AdjustGain>(new AdjustGain());
+
                     VGain = gain.VGain;
                     IGain = gain.IGain;
 
-                    var power = plugInterface.Send<GetRealtime>(new GetRealtime());
-                    Voltage = power.Voltage;
-                    Current = power.Current;
-                    Power = power.Power;
-                    Total = power.Total;
+                    var usage = plugInterface.Send<GetRealtime>(new GetRealtime());
+
+                    Current = usage.Current;
+                    Voltage = usage.Voltage;
+                    Power = usage.Power;
+                    TotalPower = usage.Total;
+
+                    Updated?.BeginInvoke(this, null, null);
                 }
-            });
-        }
-
-        public void Debug()
-        {
-            //  var a = plugInterface.Send<StartCalibration>(new StartCalibration() { VTarget = 16578, ITarget = 13406 });
-            var gain = plugInterface.Send<AdjustGain>(new AdjustGain());
-            gain.VGain = 13578;
-            plugInterface.Send(gain);
-
-            while (true)
-            {
-                var resp = plugInterface.Send<GetRealtime>(new GetRealtime());
-
-                Console.WriteLine($"{resp.Current}A {resp.Voltage}V {resp.Power}W {resp.Total}kWh");
-                Thread.Sleep(1000);
-
-
+                catch (Exception any)
+                {
+                    Exception?.Invoke(this, any);
+                }
             }
-
-
+        }
+                
+        /// <summary>
+        /// Issues a command to clear energy metering statistics on the device
+        /// </summary>
+        public void ClearUsage()
+        {
+            plugInterface.Send(new ClearStats());
         }
 
+        /// <summary>
+        /// Adjusts energy meter gain
+        /// </summary>
+        /// <param name="vgain"></param>
+        /// <param name="igain"></param>
         public void SetGain(int vgain, int igain)
         {
-            var setting = plugInterface.Send<AdjustGain>(new AdjustGain());
-            setting.VGain = vgain;
-            setting.IGain = igain;
-            plugInterface.Send(setting);
+            if (vgain > 0 && igain > 0)
+            {
+                var setting = plugInterface.Send<AdjustGain>(new AdjustGain());
+                setting.VGain = vgain;
+                setting.IGain = igain;
+                plugInterface.Send(setting);
+            }
+            else
+            {
+                throw new ArgumentOutOfRangeException($"vgain and igain must be greater than 0");
+            }
         }
-        
 
+        /// <summary>
+        /// Disposes the automatic metering timer
+        /// </summary>
+        public void Dispose()
+        {
+            Stop();
+        }
     }
 }
