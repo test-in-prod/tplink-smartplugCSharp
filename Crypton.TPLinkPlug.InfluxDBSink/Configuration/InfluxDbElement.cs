@@ -17,5 +17,19 @@ namespace Crypton.TPLinkPlug.InfluxDBSink.Configuration
             set { base["writeUrl"] = value; }
         }
 
+        [ConfigurationProperty("flushInterval", IsRequired = false, DefaultValue = 5000)]
+        public int FlushInterval
+        {
+            get { return (int)base["flushInterval"]; }
+            set { base["flushInterval"] = value; }
+        }
+
+        [ConfigurationProperty("maxBatchSize", IsRequired = false, DefaultValue = 2500)]
+        public int MaxBatchSize
+        {
+            get { return (int)base["maxBatchSize"]; }
+            set { base["maxBatchSize"] = value; } 
+        }
+
     }
 }

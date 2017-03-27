@@ -21,7 +21,7 @@ namespace Crypton.TPLinkPlug.InfluxDBSink
         public InfluxDbSubmitter(InfluxDbElement config)
         {
             this.config = config;
-            this.submitTimer = new Timer(submitAsync, null, 0, 5000);
+            this.submitTimer = new Timer(submitAsync, null, 0, config.FlushInterval);
         }
 
         private void submitAsync(object state)
@@ -46,7 +46,7 @@ namespace Crypton.TPLinkPlug.InfluxDBSink
                             {
                                 break;
                             }
-                        } while (++count < 2500);
+                        } while (++count < config.MaxBatchSize);
 
                         using (var httpClient = new HttpClient())
                         {
