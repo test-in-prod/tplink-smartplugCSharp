@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Crypton.TPLinkPlug.GainAdju
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Crypton.TPLinkPlug.DeviceEnroll", "Crypton.TPLinkPlug.DeviceEnroll\Crypton.TPLinkPlug.DeviceEnroll.csproj", "{36B0EDC5-612F-4F62-BE90-C484F36CB0BA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Crypton.TPLinkPlug.InfluxDBSink", "Crypton.TPLinkPlug.InfluxDBSink\Crypton.TPLinkPlug.InfluxDBSink.csproj", "{92929A47-959A-4A44-81BD-68BBCA11B4F7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{36B0EDC5-612F-4F62-BE90-C484F36CB0BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{36B0EDC5-612F-4F62-BE90-C484F36CB0BA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{36B0EDC5-612F-4F62-BE90-C484F36CB0BA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{92929A47-959A-4A44-81BD-68BBCA11B4F7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{92929A47-959A-4A44-81BD-68BBCA11B4F7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{92929A47-959A-4A44-81BD-68BBCA11B4F7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{92929A47-959A-4A44-81BD-68BBCA11B4F7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
