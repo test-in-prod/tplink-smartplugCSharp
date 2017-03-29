@@ -57,27 +57,39 @@ namespace Crypton.TPLinkPlug.GainAdjust
                 Console.WriteLine();
                 Console.WriteLine("Q - increase VGain, A - decrease VGain");
                 Console.WriteLine("W - increase IGain, S - decrease IGain");
+                Console.WriteLine("Shift - adjust by 1000 units, Alt - adjust by 10 units, no key - 100 units");
 
                 if (Console.KeyAvailable && emeter.VGain > 0 && emeter.IGain > 0)
                 {
                     var key = Console.ReadKey(true);
+
+                    int adjustment = 100;
+                    if ((key.Modifiers & ConsoleModifiers.Shift) == ConsoleModifiers.Shift)
+                    {
+                        adjustment = 1000;
+                    }
+                    if((key.Modifiers & ConsoleModifiers.Alt) == ConsoleModifiers.Alt)
+                    {
+                        adjustment = 10;
+                    }
+
                     switch (key.Key)
                     {
                         case ConsoleKey.Q:
-                            Console.WriteLine("Adjusting...");
-                            emeter.SetGain(emeter.VGain + 100, emeter.IGain);
+                            Console.WriteLine($"Adjusting VGain by +{adjustment}...");
+                            emeter.SetGain(emeter.VGain + adjustment, emeter.IGain);
                             break;
                         case ConsoleKey.A:
-                            Console.WriteLine("Adjusting...");
-                            emeter.SetGain(emeter.VGain - 100, emeter.IGain);
+                            Console.WriteLine($"Adjusting VGain by -{adjustment}...");
+                            emeter.SetGain(emeter.VGain - adjustment, emeter.IGain);
                             break;
                         case ConsoleKey.W:
-                            Console.WriteLine("Adjusting...");
-                            emeter.SetGain(emeter.VGain, emeter.IGain + 100);
+                            Console.WriteLine($"Adjusting IGain by +{adjustment}...");
+                            emeter.SetGain(emeter.VGain, emeter.IGain + adjustment);
                             break;
                         case ConsoleKey.S:
-                            Console.WriteLine("Adjusting...");
-                            emeter.SetGain(emeter.VGain, emeter.IGain - 100);
+                            Console.WriteLine($"Adjusting IGain by -{adjustment}...");
+                            emeter.SetGain(emeter.VGain, emeter.IGain - adjustment);
                             break;
                     }
                     Console.Clear();
